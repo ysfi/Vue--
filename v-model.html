@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>model</title>
+</head>
+<body>
+	<div id="app">
+		<input type="text" v-model="val">
+		<p v-text="val"></p>
+		<p v-html="val"></p>
+	<hr>
+		<input type="text" v-model="item">
+		<p v-text="item"></p>
+		<p v-html="item"></p>
+	</div>
+	<hr>
+		<input type="text" v-model="list">
+		<p v-text="list"></p>
+		<p v-html="list"></p>
+	
+<script type="text/javascript">
+// 本文作者：杨少峰。
+// 有哪些地方假如代码臃肿或者其他的所有问题，随时可以联系我！
+// WX:YAY_1124
+// Blog:http://www.yangshaofeng.cn
+// github:https://github.com/ysfi
+// 只是简单的实现一下v-model功能，用于理解！
+// 尤雨溪推荐使用：Object.defineProperty
+(function(global){
+	// 定义一个Vue构造函数
+	function Vue(Obj){
+		// 获取页面中所有带有[v-text]指令的元素
+		var text = document.querySelectorAll('[v-text]');
+		// 获取页面中所有带有[v-html]指令的元素
+		var html = document.querySelectorAll('[v-html]');
+		// 调用构造函数的时候传入的参数是否为对象
+		if(typeof Obj === 'object'){
+			// 如果是对象的话 就把该对象所有的属性遍历出来！
+			for ( let key in Obj ){
+				// 如果是el 暂时不处理！
+				if(key === 'el'){
+					// 打印el 要绑定到那个元素上！
+					console.log(Obj[key]);
+				}
+				// 如果是data的话就执行一些逻辑
+				if(key === 'data'){
+					// 获取页面中所有带有[v-model]指令的元素
+					var model = document.querySelectorAll('[v-model]');
+					// 把所有带有model指令的元素遍历一次
+					for(let i = 0;i<model.length;i++){
+						// 将data=>Object 存储在 Value中
+						var Value = Obj[key];
+						// 获取Model=>key的value
+						var Model = model[i].getAttribute('v-model');
+						// 把Data=>Object中的value遍历出来
+						for(let key in Value){
+							// 如果view层带有model指令的key与model层的data匹配的话
+							if(key == Model){
+								// 那么就给带有model指令的所有元素添加一个input事件
+								model[i].addEventListener('input',function(){
+									// 假如所有html不为空的话
+									if(html[i] != null){
+										html[i].innerHTML = this.value;
+									}
+									// 假如所有text不为空的话
+									if(text[i] != null){
+										text[i].innerText = this.value;
+									}
+								})
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	global.Vue = Vue;
+})(window)
+
+var vm = new Vue({
+	el: '#app',
+	data: {
+		val: '',
+		item: '',
+		list: ''
+	}
+})
+
+</script>
+
+</body>
+</html>
